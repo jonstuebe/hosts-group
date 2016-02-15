@@ -317,7 +317,11 @@ hosts.prototype = {
 		hostsobject = fn ? fn(hostsobject) : hostsobject;
 		if (!hostsobject) return;
 		var linesStr = this._hostTostr(hostsobject);
-		sudo([linesStr,'>',HOSTS]);
+		if(os.platform() == 'win32') {
+			fs.writeFileSync(HOSTS, linesStr);
+		} else {
+			sudo([linesStr,'>',HOSTS]);
+		}
 	},
 	_hostTostr: function(hostobj) {
 		var lines = [];
