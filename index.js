@@ -320,7 +320,7 @@ hosts.prototype = {
 		if(os.platform() == 'win32') {
 			fs.writeFileSync(HOSTS, linesStr);
 		} else {
-			sudo([linesStr,'>',HOSTS]);
+			sudo(['echo', linesStr, '>', HOSTS]);
 		}
 	},
 	_hostTostr: function(hostobj) {
