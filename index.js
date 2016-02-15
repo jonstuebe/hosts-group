@@ -19,7 +19,7 @@ function hosts(defaultName) {
 	this.format();
 }
 /**
-notes 
+notes
 {
     group1: '',
     ...
@@ -35,11 +35,11 @@ hosts
             note:''
         },
         {
-            
+
         }
     ],
     group2: [
-    
+
     ]
 }
 */
@@ -122,6 +122,22 @@ hosts.prototype = {
 		this._batchHost();
 	},
 	//设置一个domain
+	createHost: function(domain, ip, options) {
+		var self = this;
+		var defaultName = this.defaultName;
+		var host = {};
+		var updateHost = function() {
+			host.domain = domain;
+			host.ip = ip;
+			typeof options.disabled !== 'undefined' ? host.disabled = options.disabled: '';
+			typeof options.note !== 'undefined' ? host.note = options.note: '';
+		};
+		ip = ip || '127.0.0.1';
+		options = options || {};
+
+		updateHost();
+		return host;
+	},
 	set: function(domain, ip, options) {
 		var self = this;
 		var defaultName = this.defaultName;
@@ -144,12 +160,14 @@ hosts.prototype = {
 					return hostsobject;
 				}
 			}
+
 			group.push({
 				ip: ip,
 				domain: domain,
 				disabled: !! options.disabled,
 				note: options.note || ''
 			});
+
 			return hostsobject;
 		});
 	},
@@ -316,11 +334,15 @@ hosts.prototype = {
 		var hostsobject = this.get();
 		hostsobject = fn ? fn(hostsobject) : hostsobject;
 		if (!hostsobject) return;
+		this.save(hostsobject);
+	},
+	save: function(hostsobject){
 		var linesStr = this._hostTostr(hostsobject);
 		if(os.platform() == 'win32') {
 			fs.writeFileSync(HOSTS, linesStr);
 		} else {
-			sudo(['echo', linesStr, '>', HOSTS]);
+			fs.writeFileSync('./.tmp_hosts', linesStr);
+			sudo(['mv', './.tmp_hosts', HOSTS]);
 		}
 	},
 	_hostTostr: function(hostobj) {
@@ -344,4 +366,3 @@ hosts.prototype = {
 };
 
 module.exports = new hosts();
-
