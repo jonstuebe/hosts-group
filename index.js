@@ -4,6 +4,7 @@
  * @fileoverview hosts-group
  */
 var fs = require('fs');
+var sudo = require('sudo');
 var os = require('os');
 var util = require('util');
 
@@ -316,7 +317,7 @@ hosts.prototype = {
 		hostsobject = fn ? fn(hostsobject) : hostsobject;
 		if (!hostsobject) return;
 		var linesStr = this._hostTostr(hostsobject);
-		fs.writeFileSync(HOSTS, linesStr);
+		sudo([linesStr,'>',HOSTS]);
 	},
 	_hostTostr: function(hostobj) {
 		var lines = [];
